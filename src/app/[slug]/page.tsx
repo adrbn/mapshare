@@ -1,10 +1,10 @@
 import { getCollection } from "@/lib/storage";
-import { THEME_COLORS, ThemeColor } from "@/lib/types";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import ShareBar from "@/components/ShareBar";
 import ListCard from "@/components/ListCard";
 import CategoryFilter from "@/components/CategoryFilter";
+import SpotifyEmbed from "@/components/SpotifyEmbed";
 
 export const dynamic = "force-dynamic";
 
@@ -34,49 +34,76 @@ export default async function CollectionPage({ params }: PageProps) {
 
   if (!collection) notFound();
 
-  const theme = THEME_COLORS[(collection.themeColor as ThemeColor) ?? "teal"];
   const totalPlaces = collection.lists.reduce((sum, l) => sum + l.placeCount, 0);
   const categories = [...new Set(collection.lists.map((l) => l.category))];
 
   return (
-    <div className={`min-h-screen bg-gradient-to-b ${theme.bg}`}>
-      {/* Header */}
-      <header className="pt-12 pb-8 px-6 text-center">
-        <div className="text-5xl mb-4">{collection.coverEmoji}</div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">{collection.title}</h1>
-        {collection.subtitle && (
-          <p className="text-gray-600 max-w-md mx-auto">{collection.subtitle}</p>
-        )}
-        <div className="flex items-center justify-center gap-4 mt-4 text-sm text-gray-500">
-          <span>{collection.lists.length} lists</span>
-          <span>&middot;</span>
-          <span>{totalPlaces} places</span>
-        </div>
-      </header>
+    <div className="min-h-screen animated-gradient relative overflow-hidden">
+      {/* Floating orbs */}
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+      <div className="orb orb-3" />
 
-      {/* Share bar + QR */}
-      <ShareBar slug={collection.slug} title={collection.title} />
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Header */}
+        <header className="pt-14 pb-6 px-6 text-center">
+          {/* Cover art */}
+          {collection.coverImageUrl ? (
+            <div className="w-32 h-32 mx-auto mb-5 rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/20">
+              <img
+                src={collection.coverImageUrl}
+                alt={collection.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <div className="text-6xl mb-5">{collection.coverEmoji}</div>
+          )}
 
-      {/* Category filter */}
-      {categories.length > 1 && (
-        <CategoryFilter categories={categories} themeColor={collection.themeColor as ThemeColor} />
-      )}
+          <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
+            {collection.title}
+          </h1>
+          {collection.subtitle && (
+            <p className="text-white/50 max-w-sm mx-auto text-[15px] leading-relaxed">
+              {collection.subtitle}
+            </p>
+          )}
+          <div className="flex items-center justify-center gap-3 mt-4 text-[13px] text-white/35">
+            <span>{collection.lists.length} lists</span>
+            <span className="w-1 h-1 rounded-full bg-white/20" />
+            <span>{totalPlaces} places</span>
+          </div>
+        </header>
 
-      {/* Lists grid */}
-      <main className="max-w-lg mx-auto px-4 pb-12">
-        <div className="space-y-3" id="lists-container">
-          {collection.lists.map((list) => (
-            <ListCard key={list.id} list={list} themeColor={collection.themeColor as ThemeColor} />
-          ))}
-        </div>
+        {/* Spotify embed */}
+        {collection.spotifyUrl && <SpotifyEmbed url={collection.spotifyUrl} />}
 
-        {/* Footer */}
-        <footer className="mt-12 text-center">
-          <p className="text-xs text-gray-400">
-            Shared with MapShare
-          </p>
-        </footer>
-      </main>
+        {/* Share bar + QR */}
+        <ShareBar slug={collection.slug} title={collection.title} />
+
+        {/* Category filter */}
+        {categories.length > 1 && <CategoryFilter categories={categories} />}
+
+        {/* Lists */}
+        <main className="max-w-lg mx-auto px-4 pb-16">
+          <div className="space-y-3" id="lists-container">
+            {collection.lists.map((list) => (
+              <ListCard
+                key={list.id}
+                list={list}
+                globalCardBg={collection.globalCardBg}
+              />
+            ))}
+          </div>
+
+          <footer className="mt-14 text-center">
+            <p className="text-[11px] text-white/20 tracking-wide">
+              Shared with MapShare
+            </p>
+          </footer>
+        </main>
+      </div>
     </div>
   );
 }

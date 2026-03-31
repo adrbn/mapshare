@@ -6,6 +6,7 @@ export interface MapList {
   readonly googleMapsUrl: string;
   readonly placeCount: number;
   readonly category: string;
+  readonly cardBg?: string; // individual card background
 }
 
 export interface Collection {
@@ -14,32 +15,25 @@ export interface Collection {
   readonly title: string;
   readonly subtitle: string;
   readonly coverEmoji: string;
+  readonly coverImageUrl?: string; // cover art URL
+  readonly spotifyUrl?: string; // spotify embed URL
   readonly themeColor: string;
+  readonly globalCardBg?: string; // global card background
   readonly lists: readonly MapList[];
   readonly createdAt: string;
   readonly updatedAt: string;
 }
 
-export type ThemeColor =
-  | "rose"
-  | "orange"
-  | "amber"
-  | "emerald"
-  | "teal"
-  | "sky"
-  | "violet"
-  | "fuchsia";
-
-export const THEME_COLORS: Record<ThemeColor, { bg: string; accent: string; badge: string }> = {
-  rose: { bg: "from-rose-50 to-rose-100", accent: "bg-rose-500", badge: "bg-rose-100 text-rose-700" },
-  orange: { bg: "from-orange-50 to-orange-100", accent: "bg-orange-500", badge: "bg-orange-100 text-orange-700" },
-  amber: { bg: "from-amber-50 to-amber-100", accent: "bg-amber-500", badge: "bg-amber-100 text-amber-700" },
-  emerald: { bg: "from-emerald-50 to-emerald-100", accent: "bg-emerald-500", badge: "bg-emerald-100 text-emerald-700" },
-  teal: { bg: "from-teal-50 to-teal-100", accent: "bg-teal-500", badge: "bg-teal-100 text-teal-700" },
-  sky: { bg: "from-sky-50 to-sky-100", accent: "bg-sky-500", badge: "bg-sky-100 text-sky-700" },
-  violet: { bg: "from-violet-50 to-violet-100", accent: "bg-violet-500", badge: "bg-violet-100 text-violet-700" },
-  fuchsia: { bg: "from-fuchsia-50 to-fuchsia-100", accent: "bg-fuchsia-500", badge: "bg-fuchsia-100 text-fuchsia-700" },
-};
+export const CARD_BG_OPTIONS = [
+  { id: "glass", label: "Glass", value: "bg-white/10 backdrop-blur-xl border-white/20" },
+  { id: "white", label: "White", value: "bg-white/90 backdrop-blur-xl border-white/50" },
+  { id: "dark", label: "Dark", value: "bg-black/30 backdrop-blur-xl border-white/10" },
+  { id: "orange", label: "Warm", value: "bg-orange-500/15 backdrop-blur-xl border-orange-300/20" },
+  { id: "violet", label: "Violet", value: "bg-violet-500/15 backdrop-blur-xl border-violet-300/20" },
+  { id: "sky", label: "Sky", value: "bg-sky-500/15 backdrop-blur-xl border-sky-300/20" },
+  { id: "rose", label: "Rose", value: "bg-rose-500/15 backdrop-blur-xl border-rose-300/20" },
+  { id: "emerald", label: "Emerald", value: "bg-emerald-500/15 backdrop-blur-xl border-emerald-300/20" },
+] as const;
 
 export const CATEGORIES = [
   "Food & Drink",
