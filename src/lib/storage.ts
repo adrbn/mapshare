@@ -1,5 +1,5 @@
 import { Collection, MapList } from "./types";
-import { put, list as blobList } from "@vercel/blob";
+import { put, list as blobList, head } from "@vercel/blob";
 import { nanoid } from "nanoid";
 
 const BLOB_PATH = "collections.json";
@@ -8,7 +8,8 @@ async function readCollections(): Promise<Collection[]> {
   const { blobs } = await blobList({ prefix: BLOB_PATH });
   if (blobs.length === 0) return [];
 
-  const response = await fetch(blobs[0].url);
+  const blob = blobs[0];
+  const response = await fetch(blob.downloadUrl);
   if (!response.ok) {
     throw new Error(`Failed to fetch blob: ${response.status} ${response.statusText}`);
   }
@@ -17,7 +18,7 @@ async function readCollections(): Promise<Collection[]> {
 
 async function writeCollections(collections: readonly Collection[]): Promise<void> {
   await put(BLOB_PATH, JSON.stringify(collections, null, 2), {
-    access: "public",
+    access: "private",
     addRandomSuffix: false,
   });
 }
