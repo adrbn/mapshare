@@ -23,6 +23,7 @@ async function writeCollections(collections: readonly Collection[]): Promise<voi
   await put(BLOB_PATH, JSON.stringify(collections, null, 2), {
     access: "private",
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: "application/json",
   });
 }
