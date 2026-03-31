@@ -84,8 +84,12 @@ export default async function CollectionPage({ params }: PageProps) {
               )}
               <div className="flex items-center justify-center gap-3 mt-3 text-xs text-gray-400">
                 <span>{collection.lists.length} lists</span>
-                <span className="w-1 h-1 rounded-full bg-gray-300" />
-                <span>{totalPlaces} places</span>
+                {totalPlaces > 0 && (
+                  <>
+                    <span className="w-1 h-1 rounded-full bg-gray-300" />
+                    <span>{totalPlaces} places</span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -171,8 +175,12 @@ export default async function CollectionPage({ params }: PageProps) {
           )}
           <div className="flex items-center justify-center gap-3 mt-4 text-[13px] text-white/35">
             <span>{collection.lists.length} lists</span>
-            <span className="w-1 h-1 rounded-full bg-white/20" />
-            <span>{totalPlaces} places</span>
+            {totalPlaces > 0 && (
+              <>
+                <span className="w-1 h-1 rounded-full bg-white/20" />
+                <span>{totalPlaces} places</span>
+              </>
+            )}
           </div>
         </header>
 

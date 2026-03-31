@@ -4,18 +4,12 @@ import { nanoid } from "nanoid";
 
 const BLOB_PATH = "collections.json";
 
-// In-memory cache: prevents stale reads overwriting data and speeds up repeated reads.
-// Each serverless instance maintains its own cache; writes update it synchronously before blob upload.
-let collectionsCache: Collection[] | null = null;
-
+// Always reads fresh from blob — no cross-request cache.
+// The GET and PUT handlers run in separate Lambda instances on Vercel and cannot
+// share in-memory state, so a module-level cache only served stale data after saves.
 async function readCollections(): Promise<Collection[]> {
-  if (collectionsCache !== null) return collectionsCache;
-
   const { blobs } = await blobList({ prefix: BLOB_PATH });
-  if (blobs.length === 0) {
-    collectionsCache = [];
-    return [];
-  }
+  if (blobs.length === 0) return [];
 
   const token = process.env.BLOB_READ_WRITE_TOKEN;
   const response = await fetch(blobs[0].url, {
@@ -23,16 +17,14 @@ async function readCollections(): Promise<Collection[]> {
     cache: "no-store",
   });
   if (!response.ok) {
-    throw new Error(`Failed to fetch blob: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `Failed to fetch blob: ${response.status} ${response.statusText}`
+    );
   }
-  const data = (await response.json()) as Collection[];
-  collectionsCache = data;
-  return data;
+  return (await response.json()) as Collection[];
 }
 
 async function writeCollections(collections: readonly Collection[]): Promise<void> {
-  // Update cache immediately so subsequent reads in the same instance see the new data.
-  collectionsCache = [...collections];
   await put(BLOB_PATH, JSON.stringify(collections, null, 2), {
     access: "private",
     addRandomSuffix: false,
