@@ -19,6 +19,8 @@ export default function AdminPage() {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [editing, setEditing] = useState<Collection | null>(null);
   const [creating, setCreating] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const fetchCollections = useCallback(async () => {
     const res = await fetch("/api/collections");
@@ -30,10 +32,24 @@ export default function AdminPage() {
     if (authenticated) fetchCollections();
   }, [authenticated, fetchCollections]);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setAuthenticated(true);
-    fetchCollections();
+    setLoggingIn(true);
+    setLoginError("");
+
+    const res = await fetch("/api/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password }),
+    });
+    const json = await res.json();
+
+    if (json.success) {
+      setAuthenticated(true);
+    } else {
+      setLoginError("Wrong password");
+    }
+    setLoggingIn(false);
   };
 
   if (!authenticated) {
@@ -48,11 +64,15 @@ export default function AdminPage() {
             placeholder="Admin password"
             className="w-full px-4 py-3 border border-gray-200 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-teal-500"
           />
+          {loginError && (
+            <p className="text-red-500 text-sm mb-4 text-center">{loginError}</p>
+          )}
           <button
             type="submit"
-            className="w-full bg-teal-500 text-white py-3 rounded-xl font-medium hover:bg-teal-600 transition-colors"
+            disabled={loggingIn}
+            className="w-full bg-teal-500 text-white py-3 rounded-xl font-medium hover:bg-teal-600 transition-colors disabled:opacity-50"
           >
-            Sign In
+            {loggingIn ? "Signing in..." : "Sign In"}
           </button>
         </form>
       </div>

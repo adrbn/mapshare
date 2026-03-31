@@ -1,33 +1,44 @@
 import { Collection, MapList } from "./types";
-import { readFile, writeFile, mkdir } from "fs/promises";
-import { join } from "path";
+import { put, head, list as blobList } from "@vercel/blob";
 import { nanoid } from "nanoid";
 
-const DATA_DIR = join(process.cwd(), "data");
-const DATA_FILE = join(DATA_DIR, "collections.json");
+const BLOB_PATH = "collections.json";
 
-async function ensureDataFile(): Promise<void> {
+async function readCollections(): Promise<Collection[]> {
   try {
-    await readFile(DATA_FILE, "utf-8");
+    // List blobs to find our file
+    const { blobs } = await blobList({ prefix: BLOB_PATH });
+    if (blobs.length === 0) return [];
+
+    const response = await fetch(blobs[0].url);
+    if (!response.ok) return [];
+    return (await response.json()) as Collection[];
   } catch {
-    await mkdir(DATA_DIR, { recursive: true });
-    await writeFile(DATA_FILE, JSON.stringify([], null, 2));
+    return [];
   }
 }
 
+async function writeCollections(collections: readonly Collection[]): Promise<void> {
+  // Delete old blob(s) first by overwriting with same path
+  await put(BLOB_PATH, JSON.stringify(collections, null, 2), {
+    access: "public",
+    addRandomSuffix: false,
+  });
+}
+
 export async function getCollections(): Promise<readonly Collection[]> {
-  await ensureDataFile();
-  const raw = await readFile(DATA_FILE, "utf-8");
-  return JSON.parse(raw) as Collection[];
+  return readCollections();
 }
 
 export async function getCollection(slug: string): Promise<Collection | undefined> {
-  const collections = await getCollections();
+  const collections = await readCollections();
   return collections.find((c) => c.slug === slug);
 }
 
-export async function saveCollection(collection: Omit<Collection, "id" | "createdAt" | "updatedAt">): Promise<Collection> {
-  const collections = await getCollections();
+export async function saveCollection(
+  collection: Omit<Collection, "id" | "createdAt" | "updatedAt">
+): Promise<Collection> {
+  const collections = await readCollections();
   const now = new Date().toISOString();
   const newCollection: Collection = {
     ...collection,
@@ -35,8 +46,7 @@ export async function saveCollection(collection: Omit<Collection, "id" | "create
     createdAt: now,
     updatedAt: now,
   };
-  const updated = [...collections, newCollection];
-  await writeFile(DATA_FILE, JSON.stringify(updated, null, 2));
+  await writeCollections([...collections, newCollection]);
   return newCollection;
 }
 
@@ -44,7 +54,7 @@ export async function updateCollection(
   id: string,
   data: Partial<Omit<Collection, "id" | "createdAt">>
 ): Promise<Collection | undefined> {
-  const collections = await getCollections();
+  const collections = await readCollections();
   const index = collections.findIndex((c) => c.id === id);
   if (index === -1) return undefined;
 
@@ -53,16 +63,15 @@ export async function updateCollection(
     ...data,
     updatedAt: new Date().toISOString(),
   };
-  const newCollections = collections.map((c, i) => (i === index ? updated : c));
-  await writeFile(DATA_FILE, JSON.stringify(newCollections, null, 2));
+  await writeCollections(collections.map((c, i) => (i === index ? updated : c)));
   return updated;
 }
 
 export async function deleteCollection(id: string): Promise<boolean> {
-  const collections = await getCollections();
+  const collections = await readCollections();
   const filtered = collections.filter((c) => c.id !== id);
   if (filtered.length === collections.length) return false;
-  await writeFile(DATA_FILE, JSON.stringify(filtered, null, 2));
+  await writeCollections(filtered);
   return true;
 }
 

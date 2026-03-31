@@ -1,10 +1,12 @@
-import { getCollection, getCollections } from "@/lib/storage";
-import { THEME_COLORS, ThemeColor, CATEGORIES } from "@/lib/types";
+import { getCollection } from "@/lib/storage";
+import { THEME_COLORS, ThemeColor } from "@/lib/types";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import ShareBar from "@/components/ShareBar";
 import ListCard from "@/components/ListCard";
 import CategoryFilter from "@/components/CategoryFilter";
+
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
