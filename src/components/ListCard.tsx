@@ -34,9 +34,11 @@ export default function ListCard({ list, globalCardBg }: ListCardProps) {
             <span className="text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-white/60 border border-white/10">
               {list.category}
             </span>
-            <span className="text-[11px] text-white/40">
-              {list.placeCount} {list.placeCount === 1 ? "place" : "places"}
-            </span>
+            {list.placeCount > 0 && (
+              <span className="text-[11px] text-white/40">
+                {list.placeCount} {list.placeCount === 1 ? "place" : "places"}
+              </span>
+            )}
           </div>
         </div>
         <div className="flex-shrink-0 text-white/20">

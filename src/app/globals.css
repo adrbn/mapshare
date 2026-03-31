@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0a;
+  --background: #030010;
   --foreground: #f5f5f7;
 }
 
@@ -12,6 +12,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
+@font-face {
+  font-family: 'StretchPro';
+  src: url('/fonts/StretchPro.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
@@ -19,7 +27,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Animated gradient background */
+.font-stretch {
+  font-family: 'StretchPro', sans-serif;
+  letter-spacing: 0.08em;
+}
+
+/* Animated gradient background — deep, saturated, high contrast */
 @keyframes gradient-shift {
   0% { background-position: 0% 50%; }
   25% { background-position: 50% 100%; }
@@ -31,54 +44,54 @@ body {
 .animated-gradient {
   background: linear-gradient(
     -45deg,
-    #1a0a2e,
+    #030010,
+    #0d0525,
+    #1a0838,
     #2d1b69,
-    #4a1a4e,
-    #8b4513,
-    #d4a574,
-    #c9a0dc,
-    #4a1a6b,
-    #1a0a2e
+    #160535,
+    #3a0d60,
+    #0f041a,
+    #030010
   );
-  background-size: 400% 400%;
-  animation: gradient-shift 20s ease infinite;
+  background-size: 600% 600%;
+  animation: gradient-shift 22s ease infinite;
 }
 
 /* Liquid glass effect */
 .glass {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(40px) saturate(180%);
-  -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.glass-strong {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(60px) saturate(200%);
-  -webkit-backdrop-filter: blur(60px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.glass-card {
   background: rgba(255, 255, 255, 0.07);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.11);
+  backdrop-filter: blur(60px) saturate(200%);
+  -webkit-backdrop-filter: blur(60px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.18);
   transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .glass-card:active {
   transform: translateY(0);
 }
 
-/* Glow orbs for background depth */
+/* Glow orbs — vivid against deep dark background */
 @keyframes float-1 {
   0%, 100% { transform: translate(0, 0) scale(1); }
   33% { transform: translate(30px, -30px) scale(1.1); }
@@ -100,35 +113,35 @@ body {
 .orb {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.5;
+  filter: blur(90px);
+  opacity: 0.65;
   pointer-events: none;
 }
 
 .orb-1 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, #d4a574, transparent 70%);
-  top: 10%;
-  left: 10%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(200, 100, 40, 0.8), transparent 70%);
+  top: 8%;
+  left: 8%;
   animation: float-1 15s ease-in-out infinite;
 }
 
 .orb-2 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, #c9a0dc, transparent 70%);
-  top: 40%;
-  right: 5%;
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, rgba(160, 60, 220, 0.75), transparent 70%);
+  top: 38%;
+  right: 4%;
   animation: float-2 18s ease-in-out infinite;
 }
 
 .orb-3 {
-  width: 250px;
-  height: 250px;
-  background: radial-gradient(circle, #d4a574, transparent 70%);
-  bottom: 15%;
-  left: 20%;
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(circle, rgba(80, 40, 180, 0.6), transparent 70%);
+  bottom: 12%;
+  left: 18%;
   animation: float-3 12s ease-in-out infinite;
 }
 

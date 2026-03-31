@@ -30,7 +30,7 @@ export default function EmojiPicker({ value, onChange, size = "md" }: EmojiPicke
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={`${sizeClass} rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center hover:bg-white/20 transition-colors cursor-pointer`}
+        className={`${sizeClass} rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer`}
       >
         {value}
       </button>

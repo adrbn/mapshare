@@ -15,7 +15,7 @@ export default async function HomePage() {
       <div className="relative z-10">
         <header className="pt-20 pb-12 px-6 text-center">
           <div className="text-5xl mb-5">🗺️</div>
-          <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">MapShare</h1>
+          <h1 className="text-4xl font-stretch text-white mb-3 tracking-widest uppercase">MapShare</h1>
           <p className="text-white/50 max-w-md mx-auto text-lg">
             Share your favorite Google Maps lists with anyone, beautifully.
           </p>

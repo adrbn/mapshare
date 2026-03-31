@@ -9,6 +9,8 @@ export interface MapList {
   readonly cardBg?: string; // individual card background
 }
 
+export type BgMode = "gradient" | "dark-sheet";
+
 export interface Collection {
   readonly id: string;
   readonly slug: string;
@@ -19,6 +21,7 @@ export interface Collection {
   readonly spotifyUrl?: string; // spotify embed URL
   readonly themeColor: string;
   readonly globalCardBg?: string; // global card background
+  readonly bgMode?: BgMode; // page background mode
   readonly lists: readonly MapList[];
   readonly createdAt: string;
   readonly updatedAt: string;
