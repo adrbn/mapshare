@@ -1,5 +1,5 @@
 import { Collection, MapList } from "./types";
-import { put, list as blobList, getDownloadUrl } from "@vercel/blob";
+import { put, list as blobList } from "@vercel/blob";
 import { nanoid } from "nanoid";
 
 const BLOB_PATH = "collections.json";
@@ -8,10 +8,13 @@ async function readCollections(): Promise<Collection[]> {
   const { blobs } = await blobList({ prefix: BLOB_PATH });
   if (blobs.length === 0) return [];
 
-  const signedUrl = await getDownloadUrl(blobs[0].url);
-  const response = await fetch(signedUrl);
+  // For private stores, fetch with the token in the Authorization header
+  const token = process.env.BLOB_READ_WRITE_TOKEN;
+  const response = await fetch(blobs[0].url, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
   if (!response.ok) {
-    throw new Error(`Failed to fetch blob: ${response.status} ${response.statusText}`);
+    throw new Error(`Failed to fetch blob: ${response.status} ${response.statusText} - URL: ${blobs[0].url}`);
   }
   return (await response.json()) as Collection[];
 }
