@@ -212,25 +212,30 @@ function CollectionEditor({ collection, password, onSave, onCancel }: Collection
     setLists(lists.filter((l) => l.id !== id));
   };
 
+  const [saveError, setSaveError] = useState("");
+
   const handleSave = async () => {
     setSaving(true);
+    setSaveError("");
     const body = { title, slug, subtitle, coverEmoji, themeColor, lists };
 
-    if (collection) {
-      await fetch(`/api/collections/${collection.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "x-admin-password": password },
-        body: JSON.stringify(body),
-      });
-    } else {
-      await fetch("/api/collections", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "x-admin-password": password },
-        body: JSON.stringify(body),
-      });
-    }
+    const url = collection ? `/api/collections/${collection.id}` : "/api/collections";
+    const method = collection ? "PUT" : "POST";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json", "x-admin-password": password },
+      body: JSON.stringify(body),
+    });
+    const json = await res.json();
 
     setSaving(false);
+
+    if (!json.success) {
+      setSaveError(json.error || "Failed to save");
+      return;
+    }
+
     onSave();
   };
 
@@ -380,6 +385,10 @@ function CollectionEditor({ collection, password, onSave, onCancel }: Collection
           ))}
         </div>
       </div>
+
+      {saveError && (
+        <p className="text-red-500 text-sm mt-4 p-3 bg-red-50 rounded-xl">{saveError}</p>
+      )}
 
       <div className="flex gap-3 mt-8 pt-6 border-t border-gray-100">
         <button

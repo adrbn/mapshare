@@ -1,25 +1,21 @@
 import { Collection, MapList } from "./types";
-import { put, head, list as blobList } from "@vercel/blob";
+import { put, list as blobList } from "@vercel/blob";
 import { nanoid } from "nanoid";
 
 const BLOB_PATH = "collections.json";
 
 async function readCollections(): Promise<Collection[]> {
-  try {
-    // List blobs to find our file
-    const { blobs } = await blobList({ prefix: BLOB_PATH });
-    if (blobs.length === 0) return [];
+  const { blobs } = await blobList({ prefix: BLOB_PATH });
+  if (blobs.length === 0) return [];
 
-    const response = await fetch(blobs[0].url);
-    if (!response.ok) return [];
-    return (await response.json()) as Collection[];
-  } catch {
-    return [];
+  const response = await fetch(blobs[0].url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch blob: ${response.status} ${response.statusText}`);
   }
+  return (await response.json()) as Collection[];
 }
 
 async function writeCollections(collections: readonly Collection[]): Promise<void> {
-  // Delete old blob(s) first by overwriting with same path
   await put(BLOB_PATH, JSON.stringify(collections, null, 2), {
     access: "public",
     addRandomSuffix: false,
